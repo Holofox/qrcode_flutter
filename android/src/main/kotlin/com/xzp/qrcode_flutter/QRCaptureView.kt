@@ -12,6 +12,7 @@ import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.BarcodeView
+import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -25,21 +26,12 @@ class QRCaptureView(id: Int) :
             "checkAndRequestPermission" -> {
                 checkAndRequestPermission(result)
             }
-        }
-
-        when (call.method) {
             "resume" -> {
                 resume()
             }
-        }
-
-        when (call.method) {
             "pause" -> {
                 pause()
             }
-        }
-
-        when (call.method) {
             "setTorchMode" -> {
                 val isOn = call.arguments as Boolean
                 barcodeView?.setTorch(isOn)
@@ -102,15 +94,17 @@ class QRCaptureView(id: Int) :
         channel = MethodChannel(FlutterRegister.messenger, "plugins/qr_capture/method_$id")
         channel.setMethodCallHandler(this)
         checkAndRequestPermission(null)
+
         val barcode = BarcodeView(FlutterRegister.getActivity())
+        //TODO: Remove for support other formats
+        val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.QR_CODE)
+        barcode.decoderFactory = DefaultDecoderFactory(formats, null, null, false)
+
         this.barcodeView = barcode
         barcode.decodeContinuous(
                 object : BarcodeCallback {
                     override fun barcodeResult(result: BarcodeResult) {
-                        //TODO: Add support for other formats
-                        if (result.barcodeFormat == BarcodeFormat.QR_CODE) {
-                            channel.invokeMethod("onCaptured", result.text)
-                        }
+                        channel.invokeMethod("onCaptured", result.text)
                     }
 
                     override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
