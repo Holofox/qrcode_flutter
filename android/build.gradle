@@ -1,5 +1,3 @@
-package android
-
 group 'com.xzp.qrcode_flutter'
 version '1.0-SNAPSHOT'
 
