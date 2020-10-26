@@ -3,11 +3,11 @@ package com.xzp.qrcode_flutter
 import android.Manifest
 import android.app.Activity
 import android.app.Application
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
@@ -21,25 +21,25 @@ import io.flutter.plugin.platform.PlatformView
 class QRCaptureView(id: Int) :
         PlatformView, MethodCallHandler {
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        when (call?.method) {
+        when (call.method) {
             "checkAndRequestPermission" -> {
                 checkAndRequestPermission(result)
             }
         }
 
-        when (call?.method) {
+        when (call.method) {
             "resume" -> {
                 resume()
             }
         }
 
-        when (call?.method) {
+        when (call.method) {
             "pause" -> {
                 pause()
             }
         }
 
-        when (call?.method) {
+        when (call.method) {
             "setTorchMode" -> {
                 val isOn = call.arguments as Boolean
                 barcodeView?.setTorch(isOn)
@@ -84,7 +84,7 @@ class QRCaptureView(id: Int) :
 
     private fun hasCameraPermission(): Boolean {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-                activity?.checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                activity?.checkSelfPermission(Manifest.permission.CAMERA) == PERMISSION_GRANTED
     }
 
     companion object {
@@ -107,7 +107,10 @@ class QRCaptureView(id: Int) :
         barcode.decodeContinuous(
                 object : BarcodeCallback {
                     override fun barcodeResult(result: BarcodeResult) {
-                        channel.invokeMethod("onCaptured", result.text)
+                        //TODO: Add support for other formats
+                        if (result.barcodeFormat == BarcodeFormat.QR_CODE) {
+                            channel.invokeMethod("onCaptured", result.text)
+                        }
                     }
 
                     override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
