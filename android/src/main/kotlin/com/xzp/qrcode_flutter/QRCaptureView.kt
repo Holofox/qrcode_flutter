@@ -36,9 +36,6 @@ class QRCaptureView(id: Int) :
                 val isOn = call.arguments as Boolean
                 barcodeView?.setTorch(isOn)
             }
-        }
-
-        when (call?.method) {
             "dispose" -> {
                 dispose()
             }
