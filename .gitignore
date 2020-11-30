@@ -15,7 +15,8 @@
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
+# The .vscode folder contains la
+unch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 .vscode/
@@ -40,4 +41,5 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+android/.settings
 publish.sh

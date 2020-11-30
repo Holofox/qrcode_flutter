@@ -24,7 +24,7 @@
     }
     return _session;
 }
-
+// init capture frame
 - (instancetype)initWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id _Nullable)args registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     if (self = [super initWithFrame:frame]) {
         NSString *name = [NSString stringWithFormat:@"plugins/qr_capture/method_%lld", viewId];
@@ -44,8 +44,14 @@
         AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
         AVCaptureDeviceInput *input = [[AVCaptureDeviceInput alloc] initWithDevice:device error:nil];
         AVCaptureMetadataOutput *output = [[AVCaptureMetadataOutput alloc] init];
-        [self.session addInput:input];
-        [self.session addOutput:output];
+        if ([self.session canAddInput: input])
+        {
+            [self.session addInput: input];
+        }
+        if ([self.session canAddOutput: output])
+        {
+            [self.session addOutput: output];
+        }
         self.session.sessionPreset = AVCaptureSessionPresetHigh;
        
         //TODO: Add support for other formats
@@ -67,11 +73,16 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+    // stop camera
     if ([call.method isEqualToString:@"pause"]) {
         [self pause];
-    } else if ([call.method isEqualToString:@"resume"]) {
+    }
+    // resume camera from state 'pause'
+    else if ([call.method isEqualToString:@"resume"]) {
         [self resume];
-    } else if ([call.method isEqualToString:@"setTorchMode"]) {
+    }
+    //Set your phone's flash
+    else if ([call.method isEqualToString:@"setTorchMode"]) {
         AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
         if (!device.hasTorch) {
             return;
