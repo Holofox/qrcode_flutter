@@ -45,6 +45,8 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
 
   String _captureText = '';
 
+  int _captureCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +55,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       print('$data');
       setState(() {
         _captureText = data;
+        _captureCount++;
       });
     });
   }
@@ -76,6 +79,7 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                     await QRCaptureController.getQrCodeByImagePath(image.path);
                 setState(() {
                   _captureText = qrCodeResult.join('\n');
+                  _captureCount++;
                 });
               },
               child: Text('photoAlbum', style: TextStyle(color: Colors.white)),
@@ -100,23 +104,20 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
             ),
             Container(
               child: Text('$_captureText'),
-            )
+            ),
+            Container(
+              child: Text('Capture count: $_captureCount'),
+              alignment: Alignment.topCenter.add(Alignment(0, 0.2)),
+            ),
           ],
         ),
     );
   }
 
   Widget _buildToolBar() {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        FlatButton(
-          onPressed: () {
-            _controller.pause();
-          },
-          child: Text('pause'),
-        ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
         FlatButton(
           onPressed: () {
             if (_isTorchOn) {
@@ -126,13 +127,31 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
             }
             _isTorchOn = !_isTorchOn;
           },
-          child: Text('torch'),
+          child: Text('\n\ntorch'),
         ),
-        FlatButton(
-          onPressed: () {
-            _controller.resume();
-          },
-          child: Text('resume'),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            FlatButton(
+              onPressed: () {
+                _controller.pause();
+              },
+              child: Text('pause'),
+            ),
+            FlatButton(
+              onPressed: () {
+                _controller.resume();
+              },
+              child: Text('resume'),
+            ),
+            FlatButton(
+              onPressed: () {
+                _controller.dispose();
+              },
+              child: Text('dispose'),
+            ),
+          ],
         ),
       ],
     );

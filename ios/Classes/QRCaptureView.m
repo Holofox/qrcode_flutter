@@ -95,6 +95,8 @@
             [device setTorchMode:AVCaptureTorchModeOff];
         }
         [device unlockForConfiguration];
+    } else if ([call.method isEqualToString:@"dispose"]) {
+        [self dealloc];
     }
 }
 

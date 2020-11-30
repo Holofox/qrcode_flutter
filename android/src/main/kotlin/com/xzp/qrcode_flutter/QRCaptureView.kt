@@ -37,6 +37,12 @@ class QRCaptureView(id: Int) :
                 barcodeView?.setTorch(isOn)
             }
         }
+
+        when (call?.method) {
+            "dispose" -> {
+                dispose()
+            }
+        }
     }
 
     private fun resume() {
