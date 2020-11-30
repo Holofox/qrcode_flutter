@@ -96,7 +96,7 @@
         }
         [device unlockForConfiguration];
     } else if ([call.method isEqualToString:@"dispose"]) {
-        [self dealloc];
+        [self dispose];
     }
 }
 
@@ -111,6 +111,10 @@
     [self.session stopRunning];
 }
 
+- (void)dispose {
+    [self.session stopRunning];
+}
+
 #pragma mark - AVCaptureMetadataOutputObjectsDelegate
 -(void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection{
     if (metadataObjects.count>0) {
@@ -120,10 +124,6 @@
             [self.channel invokeMethod:@"onCaptured" arguments:value];
         }
     }
-}
-
-- (void)dealloc {
-    [self.session stopRunning];
 }
 
 @end
